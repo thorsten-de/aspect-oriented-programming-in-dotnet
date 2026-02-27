@@ -1,2 +1,12 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿var myObject = new MyClass();
+myObject.MyMethod();
+
+
+
+class MyClass
+{
+    public void MyMethod()
+    {
+        Console.WriteLine("Hello from MyMethod!");
+    }
+}
