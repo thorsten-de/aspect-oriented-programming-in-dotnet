@@ -7,3 +7,7 @@ by [MetaLama](https://metalama.net/).
 
 My intent is to get a feeling what benefits AOP brings to current .NET development, and I will
 try to adapt the code examples to .NET 10 and MetaLama while walking through the book.
+
+The versions I use are:
+
+- [PostSharp 2026.0.5 from nuget](https://www.nuget.org/packages/PostSharp)
