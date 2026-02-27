@@ -11,8 +11,14 @@ try to adapt the code examples to .NET 10 and MetaLama while walking through the
 The versions I use are:
 
 - [PostSharp 2026.0.5 from nuget](https://www.nuget.org/packages/PostSharp)
+- [Metalama.Framework 2026.0.16 on nuget](https://www.nuget.org/packages/Metalama.Framework)
 
 ### What has changed using PostSharp in 2026
 
 - Use PostSharps own `[PSerializable]` attribute, as `[Serializable]` depends on `BinaryFormatter` that is considered
   insecure. See [the explanation in postsharp documentation](https://doc.postsharp.net/deploymentconfiguration/deployment/binary-formatter-security) for more information.
+
+### Using Metalama with Visual Studio Code
+
+The Metalama documentation provides some helpful hints for [Configuring VS Code](https://doc.metalama.net/conceptual/using/ide/vs-code). For example,
+Roslyn analyzers must be enabled by setting `dotnet.backgroundAnalysis.analyzerDiagnosticScope` accordingly.
