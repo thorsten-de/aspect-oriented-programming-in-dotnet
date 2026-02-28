@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/Documentation/">
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="AcmeCarRental/AcmeCarRental.csproj" Id="91aa5426-8e65-4b7e-a4e5-c3be148746d3" />
+</Solution>
