@@ -3,6 +3,8 @@
 using AcmeCarRental.Data;
 using AcmeCarRental.Data.Entities;
 
+using static AcmeCarRental.FixtureBuilders;
+
 namespace AcmeCarRental;
 
 public class LoyaltyAccrualServiceTest
@@ -18,17 +20,8 @@ public class LoyaltyAccrualServiceTest
         var service = new LoyaltyAccrualService(dataService.Object);
         var rentalAgreement = new RentalAgreement
         {
-            Customer = new Customer {
-                Name = "John Doe",
-                DriversLicence = "D1234567",
-                DayOfBirth = new DateTime(1982, 2, 17)
-            },
-            Vehicle = new Vehicle {
-                Make = "VW",
-                Model = "Golf",
-                Vin = "1HGBH41JXMN109186",
-                Size = vehicleSize,
-            },
+            Customer = Customer(),
+            Vehicle = Vehicle(size: vehicleSize),
             StartDate = new(2026, 01, 03),
             EndDate = new(2026, 01, 06)
         };
