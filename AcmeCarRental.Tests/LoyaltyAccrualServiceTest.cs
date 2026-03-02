@@ -4,6 +4,8 @@ using AcmeCarRental.Data;
 using AcmeCarRental.Data.Entities;
 
 using static AcmeCarRental.FixtureBuilders;
+using Microsoft.Extensions.Logging.Testing;
+using Microsoft.Extensions.Logging;
 
 namespace AcmeCarRental;
 
@@ -17,7 +19,8 @@ public class LoyaltyAccrualServiceTest
     {
         // Arrange
         var dataService = new Mock<ILoyaltyDataService>();
-        var service = new LoyaltyAccrualService(dataService.Object);
+        var fakeLogger = new FakeLogger();
+        var service = new LoyaltyAccrualService(dataService.Object, fakeLogger);
         var rentalAgreement = new RentalAgreement
         {
             Customer = Customer(),
@@ -31,5 +34,7 @@ public class LoyaltyAccrualServiceTest
 
         // Assert
         dataService.Verify(service => service.AddPoints(rentalAgreement.Customer.Id, expectedPointsEarned), Times.Once);
+        Assert.Equal(4, fakeLogger.Collector.Count);
+        Assert.Equal(LogLevel.Information, fakeLogger.LatestRecord.Level);
     }
 }

@@ -9,4 +9,8 @@
   <ItemGroup>
     <InternalsVisibleTo Include="AcmeCarRental.Tests" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.3" />
+  </ItemGroup>
 </Project>
