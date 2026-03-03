@@ -8,6 +8,11 @@ internal class LoyaltyRedeemService(ILoyaltyDataService loyaltyDataService, ILog
 {
     public void Redeem(Invoice invoice, int numberOfDays)
     {
+        #region Defensive programming
+        ArgumentNullException.ThrowIfNull(invoice);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(numberOfDays);
+        #endregion
+
         #region Logging
         logger.LogInformation("Redeem: {date}", DateTime.Now);
         logger.LogInformation("Invoice: {invoiceId}", invoice.Id);

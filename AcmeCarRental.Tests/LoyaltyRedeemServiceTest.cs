@@ -11,6 +11,15 @@ namespace AcmeCarRental;
 
 public class LoyaltyRedeemServiceTest
 {
+    private readonly Mock<ILoyaltyDataService> dataService = new();
+    private readonly FakeLogger fakeLogger = new();
+    private readonly LoyaltyRedeemService service = null!;
+
+    public LoyaltyRedeemServiceTest()
+    {
+        service = new LoyaltyRedeemService(dataService.Object, fakeLogger);
+    }
+
     [Theory]
     [InlineData(Size.FullSize, 30)]
     [InlineData(Size.Luxury, 45)]
@@ -18,9 +27,6 @@ public class LoyaltyRedeemServiceTest
     public void Redeem_ShouldSubstractLoyaltyPoints_WhenInvoiceIsValid(Size vehicleSize, int expectedPointsRedeemed)
     {
         // Arrange
-        var dataService = new Mock<ILoyaltyDataService>();
-        var fakeLogger = new FakeLogger();
-        var service = new LoyaltyRedeemService(dataService.Object, fakeLogger);
         var invoice = new Invoice
         {
             Customer = Customer(),
@@ -36,5 +42,31 @@ public class LoyaltyRedeemServiceTest
         dataService.Verify(service => service.SubstractPoints(invoice.Customer.Id, expectedPointsRedeemed), Times.Once);
         Assert.Equal(3, fakeLogger.Collector.Count);
         Assert.Equal(LogLevel.Information, fakeLogger.LatestRecord.Level);
+    }
+
+    [Fact]
+    public void Redeem_ShouldThrowException_WhenInvoiceIsNull()
+    {
+        Assert.Throws<ArgumentNullException>("invoice", () =>
+        {
+            service.Redeem(null!, numberOfDays: 3);
+        });
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-10)]
+    public void Redeem_ShouldThrowException_WhenNumberOfDaysNotPositive(int invalidDays)
+    {
+        var ex = Assert.Throws<ArgumentOutOfRangeException>("numberOfDays", () =>
+        {
+            var invoice = new Invoice
+            {
+                Customer = Customer(),
+                Vehicle = Vehicle(),
+                CostPerDay = 10m
+            };
+            service.Redeem(invoice, numberOfDays: invalidDays);
+        });
     }
 }

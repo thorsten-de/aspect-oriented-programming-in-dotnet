@@ -11,6 +11,15 @@ namespace AcmeCarRental;
 
 public class LoyaltyAccrualServiceTest
 {
+    private readonly FakeLogger _fakeLogger = new();
+    private readonly Mock<ILoyaltyDataService> _dataService = new();
+    private readonly LoyaltyAccrualService _service = null!;
+
+    public LoyaltyAccrualServiceTest()
+    {
+        _service = new LoyaltyAccrualService(_dataService.Object, _fakeLogger);
+    }
+
     [Theory]
     [InlineData(Size.Compact, 3)]
     [InlineData(Size.Luxury, 6)]
@@ -18,9 +27,6 @@ public class LoyaltyAccrualServiceTest
     public void Accrue_ShouldAddLoyaltyPoints_WhenRentalAgreementIsValid(Size vehicleSize, int expectedPointsEarned)
     {
         // Arrange
-        var dataService = new Mock<ILoyaltyDataService>();
-        var fakeLogger = new FakeLogger();
-        var service = new LoyaltyAccrualService(dataService.Object, fakeLogger);
         var rentalAgreement = new RentalAgreement
         {
             Customer = Customer(),
@@ -30,11 +36,20 @@ public class LoyaltyAccrualServiceTest
         };
 
         // Act
-        service.Accrue(rentalAgreement);
+        _service.Accrue(rentalAgreement);
 
         // Assert
-        dataService.Verify(service => service.AddPoints(rentalAgreement.Customer.Id, expectedPointsEarned), Times.Once);
-        Assert.Equal(4, fakeLogger.Collector.Count);
-        Assert.Equal(LogLevel.Information, fakeLogger.LatestRecord.Level);
+        _dataService.Verify(service => service.AddPoints(rentalAgreement.Customer.Id, expectedPointsEarned), Times.Once);
+        Assert.Equal(4, _fakeLogger.Collector.Count);
+        Assert.Equal(LogLevel.Information, _fakeLogger.LatestRecord.Level);
+    }
+
+    [Fact]
+    public void Accrue_ShoudThrowException_WhenRentalAgreementIsNull()
+    {
+        Assert.Throws<ArgumentNullException>("agreement", () =>
+        {
+            _service.Accrue(null!);
+        });
     }
 }

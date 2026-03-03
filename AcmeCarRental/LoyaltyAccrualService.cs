@@ -8,6 +8,10 @@ internal class LoyaltyAccrualService(ILoyaltyDataService loyaltyDataService, ILo
 {
     public void Accrue(RentalAgreement agreement)
     {
+        #region Defensive programming
+        ArgumentNullException.ThrowIfNull(agreement);
+        #endregion
+
         #region Logging
         logger.LogInformation("Accrue: {date}", DateTime.Now);
         logger.LogInformation("Customer: {customerId}", agreement.Customer.Id);
