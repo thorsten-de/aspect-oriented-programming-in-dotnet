@@ -4,7 +4,11 @@ using Microsoft.Extensions.Logging;
 
 namespace AcmeCarRental;
 
-internal class LoyaltyRedeemService(ILoyaltyDataService loyaltyDataService, ILogger logger) : ILoyaltyRedeemService
+internal class LoyaltyRedeemService(
+    ILoyaltyDataService loyaltyDataService,
+    ILogger logger,
+    ITransactionManager transactions
+    ) : ILoyaltyRedeemService
 {
     public void Redeem(Invoice invoice, int numberOfDays)
     {
@@ -18,10 +22,14 @@ internal class LoyaltyRedeemService(ILoyaltyDataService loyaltyDataService, ILog
         logger.LogInformation("Invoice: {invoiceId}", invoice.Id);
         #endregion
 
+        using var scope = transactions.CreateScope();
+
         int pointsPerDay = invoice.Vehicle.Size < Size.Luxury ? 10 : 15;
         loyaltyDataService.SubstractPoints(invoice.Customer.Id, pointsPerDay * numberOfDays);
 
         invoice.Discount = numberOfDays * invoice.CostPerDay;
+
+        scope.Complete();
 
         #region Logging
         logger.LogInformation("Redeem complete: {date}", DateTime.Now);

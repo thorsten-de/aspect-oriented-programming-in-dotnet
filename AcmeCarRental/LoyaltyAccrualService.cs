@@ -4,7 +4,11 @@ using Microsoft.Extensions.Logging;
 
 namespace AcmeCarRental;
 
-internal class LoyaltyAccrualService(ILoyaltyDataService loyaltyDataService, ILogger logger) : ILoyaltyAccrualService
+internal class LoyaltyAccrualService(
+    ILoyaltyDataService loyaltyDataService,
+    ILogger logger,
+    ITransactionManager transactions
+    ) : ILoyaltyAccrualService
 {
     public void Accrue(RentalAgreement agreement)
     {
@@ -18,12 +22,15 @@ internal class LoyaltyAccrualService(ILoyaltyDataService loyaltyDataService, ILo
         logger.LogInformation("Vehicle: {vehicleId}", agreement.Vehicle.Id);
         #endregion
 
+        using var scope = transactions.CreateScope();
 
         var rentalTimeSpan = agreement.EndDate - agreement.StartDate;
         int numberOfDays = (int)Math.Floor(rentalTimeSpan.TotalDays);
         int pointsPerDay = agreement.Vehicle.Size < Size.Luxury ? 1 : 2;
 
         loyaltyDataService.AddPoints(agreement.Customer.Id, numberOfDays * pointsPerDay);
+
+        scope.Complete();
 
         #region Logging
         logger.LogInformation("Accrue complete: {date}", DateTime.Now);

@@ -14,10 +14,11 @@ public class LoyaltyAccrualServiceTest
     private readonly FakeLogger _fakeLogger = new();
     private readonly Mock<ILoyaltyDataService> _dataService = new();
     private readonly LoyaltyAccrualService _service = null!;
+    private readonly FakeTransactionManager _transactions = new();
 
     public LoyaltyAccrualServiceTest()
     {
-        _service = new LoyaltyAccrualService(_dataService.Object, _fakeLogger);
+        _service = new LoyaltyAccrualService(_dataService.Object, _fakeLogger, _transactions);
     }
 
     [Theory]
@@ -42,6 +43,8 @@ public class LoyaltyAccrualServiceTest
         _dataService.Verify(service => service.AddPoints(rentalAgreement.Customer.Id, expectedPointsEarned), Times.Once);
         Assert.Equal(4, _fakeLogger.Collector.Count);
         Assert.Equal(LogLevel.Information, _fakeLogger.LatestRecord.Level);
+
+        Assert.Equal(TransactionState.Commit, _transactions.LastScopeState);
     }
 
     [Fact]

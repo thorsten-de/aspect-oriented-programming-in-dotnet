@@ -1,0 +1,42 @@
+namespace AcmeCarRental;
+
+internal enum TransactionState
+{
+    None,
+    Started,
+    Commit,
+    Rollback
+}
+
+/// <summary>
+/// Fake implementation of transaction scope management
+/// </summary>
+internal class FakeTransactionManager : ITransactionManager
+{
+    private Scope? _lastScope;
+
+    public ITransactionScope CreateScope()
+    {
+        return _lastScope = new Scope();
+    }
+
+    public TransactionState LastScopeState => _lastScope?.State ?? TransactionState.None;
+
+    internal sealed class Scope : ITransactionScope
+    {
+        private TransactionState _state = TransactionState.Started;
+
+        internal TransactionState State => _state;
+
+        public void Complete()
+        {
+            _state = TransactionState.Commit;
+
+        }
+        public void Dispose()
+        {
+            if (_state == TransactionState.Started)
+                _state = TransactionState.Rollback;
+        }
+    }
+}
