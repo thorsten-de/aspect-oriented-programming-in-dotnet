@@ -1,24 +1,22 @@
-﻿using Moq;
+﻿using AcmeCarRental.Data.Entities;
 
-using AcmeCarRental.Data;
-using AcmeCarRental.Data.Entities;
-
-using static AcmeCarRental.FixtureBuilders;
 using Microsoft.Extensions.Logging.Testing;
 using Microsoft.Extensions.Logging;
+
+using static AcmeCarRental.FixtureBuilders;
 
 namespace AcmeCarRental;
 
 public class LoyaltyAccrualServiceTest
 {
     private readonly FakeLogger _fakeLogger = new();
-    private readonly Mock<ILoyaltyDataService> _dataService = new();
+    private readonly FlakyDataService _dataService = new();
     private readonly LoyaltyAccrualService _service = null!;
     private readonly FakeTransactionManager _transactions = new();
 
     public LoyaltyAccrualServiceTest()
     {
-        _service = new LoyaltyAccrualService(_dataService.Object, _fakeLogger, _transactions);
+        _service = new LoyaltyAccrualService(_dataService, _fakeLogger, _transactions);
     }
 
     [Theory]
@@ -40,7 +38,7 @@ public class LoyaltyAccrualServiceTest
         _service.Accrue(rentalAgreement);
 
         // Assert
-        _dataService.Verify(service => service.AddPoints(rentalAgreement.Customer.Id, expectedPointsEarned), Times.Once);
+        Assert.Equal(expectedPointsEarned, _dataService[rentalAgreement.Customer.Id]);
         Assert.Equal(4, _fakeLogger.Collector.Count);
         Assert.Equal(LogLevel.Information, _fakeLogger.LatestRecord.Level);
 

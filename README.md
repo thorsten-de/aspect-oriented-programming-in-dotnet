@@ -53,10 +53,16 @@ Additionally, some technical concerns must be addresssed:
 
 1. Write the code without using AOP. This is Section 2.2 in the book and found in the section/2.2-life-without-aop branch
 
+## Differences in my implementation of Section 2.2
 
+### Write xunit tests instead of a console program
+We atually write tests for the business logic in section 2.2.2. Therefore, instead of a console application,
+a new project `AcmeCarRental.Tests` is added. We use
+- xUnit testing framework
+- `FakeLogger` provided by `Microsoft.Extensions.Diagnostics.Testing` package
+- `Moq` for mocking dependencies, where appropriate
 
+Besides faking the `ILogger`, we need to fake other components to make them testable:
 
-
-
-
-  
+- A `FakeTransactionScope` manager can sense when we don't enter or complete a transaction scope properly
+- A `FlakyDataService` fake implementation for `ILoyaltyDataService` that can simulate failures

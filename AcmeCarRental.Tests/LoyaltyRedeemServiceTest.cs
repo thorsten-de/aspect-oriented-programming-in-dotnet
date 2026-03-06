@@ -11,14 +11,14 @@ namespace AcmeCarRental;
 
 public class LoyaltyRedeemServiceTest
 {
-    private readonly Mock<ILoyaltyDataService> _dataService = new();
+    private readonly FlakyDataService _dataService = new();
     private readonly FakeLogger _fakeLogger = new();
     private readonly LoyaltyRedeemService _service = null!;
     private readonly FakeTransactionManager _transactions = new();
 
     public LoyaltyRedeemServiceTest()
     {
-        _service = new LoyaltyRedeemService(_dataService.Object, _fakeLogger, _transactions);
+        _service = new LoyaltyRedeemService(_dataService, _fakeLogger, _transactions);
     }
 
     [Theory]
@@ -40,7 +40,7 @@ public class LoyaltyRedeemServiceTest
 
         // Assert
         Assert.Equal(89.85m, invoice.Discount);
-        _dataService.Verify(service => service.SubstractPoints(invoice.Customer.Id, expectedPointsRedeemed), Times.Once);
+        Assert.Equal(-expectedPointsRedeemed, _dataService[invoice.Customer.Id]);
         Assert.Equal(3, _fakeLogger.Collector.Count);
         Assert.Equal(LogLevel.Information, _fakeLogger.LatestRecord.Level);
 
