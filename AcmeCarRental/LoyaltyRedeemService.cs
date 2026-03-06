@@ -7,7 +7,8 @@ namespace AcmeCarRental;
 internal class LoyaltyRedeemService(
     ILoyaltyDataService loyaltyDataService,
     ILogger logger,
-    ITransactionManager transactions
+    ITransactionManager transactions,
+    IExceptionHandler exceptionHandler
     ) : ILoyaltyRedeemService
 {
     private const int MaxRetries = 3;
@@ -23,33 +24,41 @@ internal class LoyaltyRedeemService(
         logger.LogInformation("Invoice: {invoiceId}", invoice.Id);
         #endregion
 
-        using var scope = transactions.CreateScope();
-
-        int retries = MaxRetries;
-        bool successful = false;
-        while (!successful)
+        try
         {
-            try
+            using var scope = transactions.CreateScope();
+
+            int retries = MaxRetries;
+            bool successful = false;
+            while (!successful)
             {
+                try
+                {
 
-                int pointsPerDay = invoice.Vehicle.Size < Size.Luxury ? 10 : 15;
-                loyaltyDataService.SubstractPoints(invoice.Customer.Id, pointsPerDay * numberOfDays);
+                    int pointsPerDay = invoice.Vehicle.Size < Size.Luxury ? 10 : 15;
+                    loyaltyDataService.SubstractPoints(invoice.Customer.Id, pointsPerDay * numberOfDays);
 
-                invoice.Discount = numberOfDays * invoice.CostPerDay;
+                    invoice.Discount = numberOfDays * invoice.CostPerDay;
 
-                successful = scope.Complete();
+                    successful = scope.Complete();
 
-                #region Logging
-                logger.LogInformation("Redeem complete: {date}", DateTime.Now);
-                #endregion
+                    #region Logging
+                    logger.LogInformation("Redeem complete: {date}", DateTime.Now);
+                    #endregion
+                }
+                catch
+                {
+                    if (retries > 0)
+                        retries--;
+                    else
+                        throw;
+                }
             }
-            catch
-            {
-                if (retries > 0)
-                    retries--;
-                else
-                    throw;
-            }
+        }
+        catch (Exception ex)
+        {
+            if (!exceptionHandler.Handle(ex))
+                throw;
         }
     }
 }

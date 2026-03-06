@@ -15,10 +15,11 @@ public class LoyaltyRedeemServiceTest
     private readonly FakeLogger _fakeLogger = new();
     private readonly LoyaltyRedeemService _service = null!;
     private readonly FakeTransactionManager _transactions = new();
+    private readonly Mock<IExceptionHandler> _exceptionHandlerMock = new();
 
     public LoyaltyRedeemServiceTest()
     {
-        _service = new LoyaltyRedeemService(_dataService, _fakeLogger, _transactions);
+        _service = new LoyaltyRedeemService(_dataService, _fakeLogger, _transactions, _exceptionHandlerMock.Object);
     }
 
     [Theory]
@@ -106,6 +107,28 @@ public class LoyaltyRedeemServiceTest
             CostPerDay = 29.95m,
         };
 
-        Assert.ThrowsAny<Exception>(() => _service.Redeem(invoice, numberOfDays: 3));
+        Assert.ThrowsAny<TimeoutException>(() => _service.Redeem(invoice, numberOfDays: 3));
+        _exceptionHandlerMock.Verify(h => h.Handle(It.IsAny<TimeoutException>()), Times.Once);
+    }
+
+    [Fact]
+    public void Redeem_ShouldHandleException_WhenExceptionHandlerHandlesException()
+    {
+        _dataService.SimulateFailingAttempts = 4;
+        _exceptionHandlerMock.Setup(h => h.Handle(It.IsAny<TimeoutException>())).Returns(true);
+
+        // Arrange
+        var invoice = new Invoice
+        {
+            Customer = Customer(),
+            Vehicle = Vehicle(),
+            CostPerDay = 29.95m,
+        };
+
+        _service.Redeem(invoice, numberOfDays: 3);
+
+        // Assert
+        Assert.Equal(0, _dataService[invoice.Customer.Id]);
+        _exceptionHandlerMock.Verify(h => h.Handle(It.IsAny<TimeoutException>()), Times.Once);
     }
 }

@@ -7,7 +7,8 @@ namespace AcmeCarRental;
 internal class LoyaltyAccrualService(
     ILoyaltyDataService loyaltyDataService,
     ILogger logger,
-    ITransactionManager transactions
+    ITransactionManager transactions,
+    IExceptionHandler exceptionHandler
     ) : ILoyaltyAccrualService
 {
     private const int MaxRetries = 3;
@@ -22,34 +23,41 @@ internal class LoyaltyAccrualService(
         logger.LogInformation("Customer: {customerId}", agreement.Customer.Id);
         logger.LogInformation("Vehicle: {vehicleId}", agreement.Vehicle.Id);
         #endregion
-
-        using var scope = transactions.CreateScope();
-        int retries = MaxRetries;
-        bool succeeded = false;
-
-        while (!succeeded)
+        try
         {
-            try
+            using var scope = transactions.CreateScope();
+            int retries = MaxRetries;
+            bool succeeded = false;
+
+            while (!succeeded)
             {
-                var rentalTimeSpan = agreement.EndDate - agreement.StartDate;
-                int numberOfDays = (int)Math.Floor(rentalTimeSpan.TotalDays);
-                int pointsPerDay = agreement.Vehicle.Size < Size.Luxury ? 1 : 2;
+                try
+                {
+                    var rentalTimeSpan = agreement.EndDate - agreement.StartDate;
+                    int numberOfDays = (int)Math.Floor(rentalTimeSpan.TotalDays);
+                    int pointsPerDay = agreement.Vehicle.Size < Size.Luxury ? 1 : 2;
 
-                loyaltyDataService.AddPoints(agreement.Customer.Id, numberOfDays * pointsPerDay);
+                    loyaltyDataService.AddPoints(agreement.Customer.Id, numberOfDays * pointsPerDay);
 
-                succeeded = scope.Complete();
+                    succeeded = scope.Complete();
 
-                #region Logging
-                logger.LogInformation("Accrue complete: {date}", DateTime.Now);
-                #endregion
+                    #region Logging
+                    logger.LogInformation("Accrue complete: {date}", DateTime.Now);
+                    #endregion
+                }
+                catch
+                {
+                    if (retries > 0)
+                        retries--;
+                    else
+                        throw;
+                }
             }
-            catch
-            {
-                if (retries > 0)
-                    retries--;
-                else
-                    throw;
-            }
+        }
+        catch (Exception ex)
+        {
+            if (!exceptionHandler.Handle(ex))
+                throw;
         }
     }
 }

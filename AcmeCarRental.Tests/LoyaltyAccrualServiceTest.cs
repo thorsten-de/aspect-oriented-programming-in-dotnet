@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging.Testing;
 using Microsoft.Extensions.Logging;
 
 using static AcmeCarRental.FixtureBuilders;
+using Moq;
 
 namespace AcmeCarRental;
 
@@ -13,10 +14,11 @@ public class LoyaltyAccrualServiceTest
     private readonly FlakyDataService _dataService = new();
     private readonly LoyaltyAccrualService _service = null!;
     private readonly FakeTransactionManager _transactions = new();
+    private readonly Mock<IExceptionHandler> _exceptionHandlerMock = new();
 
     public LoyaltyAccrualServiceTest()
     {
-        _service = new LoyaltyAccrualService(_dataService, _fakeLogger, _transactions);
+        _service = new LoyaltyAccrualService(_dataService, _fakeLogger, _transactions, _exceptionHandlerMock.Object);
     }
 
     [Theory]
@@ -88,5 +90,28 @@ public class LoyaltyAccrualServiceTest
         };
 
         Assert.ThrowsAny<Exception>(() => _service.Accrue(rentalAgreement));
+        _exceptionHandlerMock.Verify(h => h.Handle(It.IsAny<TimeoutException>()), Times.Once);
+    }
+
+    [Fact]
+    public void Accrue_ShouldHandleException_WhenExceptionHandlerHandlesException()
+    {
+        // Arrange
+        _dataService.SimulateFailingAttempts = 4;
+        _exceptionHandlerMock.Setup(h => h.Handle(It.IsAny<TimeoutException>())).Returns(true);
+
+        var rentalAgreement = new RentalAgreement
+        {
+            Customer = Customer(),
+            Vehicle = Vehicle(),
+            StartDate = new(2026, 01, 03),
+            EndDate = new(2026, 01, 06)
+        };
+
+        _service.Accrue(rentalAgreement);
+
+        // Assert
+        Assert.Equal(0, _dataService[rentalAgreement.Customer.Id]);
+        _exceptionHandlerMock.Verify(h => h.Handle(It.IsAny<TimeoutException>()), Times.Once);
     }
 }
