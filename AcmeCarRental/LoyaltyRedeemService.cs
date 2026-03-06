@@ -10,6 +10,7 @@ internal class LoyaltyRedeemService(
     ITransactionManager transactions
     ) : ILoyaltyRedeemService
 {
+    private const int MaxRetries = 3;
     public void Redeem(Invoice invoice, int numberOfDays)
     {
         #region Defensive programming
@@ -24,15 +25,31 @@ internal class LoyaltyRedeemService(
 
         using var scope = transactions.CreateScope();
 
-        int pointsPerDay = invoice.Vehicle.Size < Size.Luxury ? 10 : 15;
-        loyaltyDataService.SubstractPoints(invoice.Customer.Id, pointsPerDay * numberOfDays);
+        int retries = MaxRetries;
+        bool successful = false;
+        while (!successful)
+        {
+            try
+            {
 
-        invoice.Discount = numberOfDays * invoice.CostPerDay;
+                int pointsPerDay = invoice.Vehicle.Size < Size.Luxury ? 10 : 15;
+                loyaltyDataService.SubstractPoints(invoice.Customer.Id, pointsPerDay * numberOfDays);
 
-        scope.Complete();
+                invoice.Discount = numberOfDays * invoice.CostPerDay;
 
-        #region Logging
-        logger.LogInformation("Redeem complete: {date}", DateTime.Now);
-        #endregion
+                successful = scope.Complete();
+
+                #region Logging
+                logger.LogInformation("Redeem complete: {date}", DateTime.Now);
+                #endregion
+            }
+            catch
+            {
+                if (retries > 0)
+                    retries--;
+                else
+                    throw;
+            }
+        }
     }
 }

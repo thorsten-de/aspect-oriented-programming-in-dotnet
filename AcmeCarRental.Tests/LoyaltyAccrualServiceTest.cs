@@ -53,4 +53,40 @@ public class LoyaltyAccrualServiceTest
             _service.Accrue(null!);
         });
     }
+
+    [Fact]
+    public void Accrue_ShouldAddLoyaltyPoints_WhenRetriedSuccessfully()
+    {
+        // Arrange
+        _dataService.SimulateFailingAttempts = 3;
+        var rentalAgreement = new RentalAgreement
+        {
+            Customer = Customer(),
+            Vehicle = Vehicle(),
+            StartDate = new(2026, 01, 03),
+            EndDate = new(2026, 01, 06)
+        };
+
+        // Act
+        _service.Accrue(rentalAgreement);
+
+        // Assert
+        Assert.True(_dataService[rentalAgreement.Customer.Id] > 0, "Expected that the customer has accrued points.");
+    }
+
+    [Fact]
+    public void Accrue_ShouldThrowException_WhenRetriesFail()
+    {
+        // Arrange
+        _dataService.SimulateFailingAttempts = 4;
+        var rentalAgreement = new RentalAgreement
+        {
+            Customer = Customer(),
+            Vehicle = Vehicle(),
+            StartDate = new(2026, 01, 03),
+            EndDate = new(2026, 01, 06)
+        };
+
+        Assert.ThrowsAny<Exception>(() => _service.Accrue(rentalAgreement));
+    }
 }

@@ -10,6 +10,7 @@ internal class LoyaltyAccrualService(
     ITransactionManager transactions
     ) : ILoyaltyAccrualService
 {
+    private const int MaxRetries = 3;
     public void Accrue(RentalAgreement agreement)
     {
         #region Defensive programming
@@ -23,17 +24,32 @@ internal class LoyaltyAccrualService(
         #endregion
 
         using var scope = transactions.CreateScope();
+        int retries = MaxRetries;
+        bool succeeded = false;
 
-        var rentalTimeSpan = agreement.EndDate - agreement.StartDate;
-        int numberOfDays = (int)Math.Floor(rentalTimeSpan.TotalDays);
-        int pointsPerDay = agreement.Vehicle.Size < Size.Luxury ? 1 : 2;
+        while (!succeeded)
+        {
+            try
+            {
+                var rentalTimeSpan = agreement.EndDate - agreement.StartDate;
+                int numberOfDays = (int)Math.Floor(rentalTimeSpan.TotalDays);
+                int pointsPerDay = agreement.Vehicle.Size < Size.Luxury ? 1 : 2;
 
-        loyaltyDataService.AddPoints(agreement.Customer.Id, numberOfDays * pointsPerDay);
+                loyaltyDataService.AddPoints(agreement.Customer.Id, numberOfDays * pointsPerDay);
 
-        scope.Complete();
+                succeeded = scope.Complete();
 
-        #region Logging
-        logger.LogInformation("Accrue complete: {date}", DateTime.Now);
-        #endregion
+                #region Logging
+                logger.LogInformation("Accrue complete: {date}", DateTime.Now);
+                #endregion
+            }
+            catch
+            {
+                if (retries > 0)
+                    retries--;
+                else
+                    throw;
+            }
+        }
     }
 }

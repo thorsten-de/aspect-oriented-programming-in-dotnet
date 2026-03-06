@@ -28,11 +28,12 @@ internal class FakeTransactionManager : ITransactionManager
 
         internal TransactionState State => _state;
 
-        public void Complete()
+        public bool Complete()
         {
             _state = TransactionState.Commit;
-
+            return true;
         }
+
         public void Dispose()
         {
             if (_state == TransactionState.Started)

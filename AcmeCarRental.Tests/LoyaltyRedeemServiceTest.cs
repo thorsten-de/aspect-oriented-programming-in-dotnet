@@ -72,4 +72,40 @@ public class LoyaltyRedeemServiceTest
             _service.Redeem(invoice, numberOfDays: invalidDays);
         });
     }
+
+    [Fact]
+    public void Redeem_ShouldSpendLoyaltyPoints_WhenRetriedSuccessfully()
+    {
+        _dataService.SimulateFailingAttempts = 3;
+
+        // Arrange
+        var invoice = new Invoice
+        {
+            Customer = Customer(),
+            Vehicle = Vehicle(),
+            CostPerDay = 29.95m,
+        };
+
+        // Act
+        _service.Redeem(invoice, numberOfDays: 3);
+
+        // Assert
+        Assert.True(_dataService[invoice.Customer.Id] < 0, "Expected that the customer has redeemed points.");
+    }
+
+    [Fact]
+    public void Redeem_ShouldThrowException_WhenRetriesFail()
+    {
+        _dataService.SimulateFailingAttempts = 4;
+
+        // Arrange
+        var invoice = new Invoice
+        {
+            Customer = Customer(),
+            Vehicle = Vehicle(),
+            CostPerDay = 29.95m,
+        };
+
+        Assert.ThrowsAny<Exception>(() => _service.Redeem(invoice, numberOfDays: 3));
+    }
 }
