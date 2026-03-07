@@ -24,7 +24,7 @@ internal class LoyaltyRedeemService(
         logger.LogInformation("Invoice: {invoiceId}", invoice.Id);
         #endregion
 
-        try
+        exceptionHandler.Wrapper(() =>
         {
             using var scope = transactions.CreateScope();
 
@@ -54,11 +54,6 @@ internal class LoyaltyRedeemService(
                         throw;
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            if (!exceptionHandler.Handle(ex))
-                throw;
-        }
+        });
     }
 }

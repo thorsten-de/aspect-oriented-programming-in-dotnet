@@ -14,7 +14,7 @@ public abstract class LoyaltyAccrualServiceTest
     protected readonly FlakyDataService _dataService = new();
     protected readonly ILoyaltyAccrualService _service = null!;
     protected readonly FakeTransactionManager _transactions = new();
-    protected readonly Mock<IExceptionHandler> _exceptionHandlerMock = new();
+    protected readonly Mock<IExceptionHandler> _exceptionHandlerMock = new() { CallBase = true };
 
     public LoyaltyAccrualServiceTest()
     {

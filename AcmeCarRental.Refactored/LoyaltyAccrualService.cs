@@ -23,7 +23,8 @@ internal class LoyaltyAccrualService(
         logger.LogInformation("Customer: {customerId}", agreement.Customer.Id);
         logger.LogInformation("Vehicle: {vehicleId}", agreement.Vehicle.Id);
         #endregion
-        try
+
+        exceptionHandler.Wrapper(() =>
         {
             using var scope = transactions.CreateScope();
             int retries = MaxRetries;
@@ -53,11 +54,6 @@ internal class LoyaltyAccrualService(
                         throw;
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            if (!exceptionHandler.Handle(ex))
-                throw;
-        }
+        });
     }
 }
