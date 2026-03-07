@@ -4,6 +4,7 @@ public class LoyaltyRedeemServiceRefactoredTest : LoyaltyRedeemServiceTest
 {
     protected override ILoyaltyRedeemService CreateService()
     {
-        return new LoyaltyRedeemService(_dataService, _fakeLogger, _transactions, _exceptionHandlerMock.Object);
+        return new LoyaltyRedeemService(_dataService, _fakeLogger,
+            new TransactionFacade(_transactions, _exceptionHandlerMock.Object));
     }
 }
