@@ -2,7 +2,7 @@
 using AcmeCarRental.Data.Entities;
 using Microsoft.Extensions.Logging;
 
-namespace AcmeCarRental;
+namespace AcmeCarRental.NoAOP;
 
 internal class LoyaltyAccrualService(
     ILoyaltyDataService loyaltyDataService,

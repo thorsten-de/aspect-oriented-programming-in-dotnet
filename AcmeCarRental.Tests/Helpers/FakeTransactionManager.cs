@@ -1,6 +1,6 @@
 namespace AcmeCarRental;
 
-internal enum TransactionState
+public enum TransactionState
 {
     None,
     Started,
@@ -11,7 +11,7 @@ internal enum TransactionState
 /// <summary>
 /// Fake implementation of transaction scope management
 /// </summary>
-internal class FakeTransactionManager : ITransactionManager
+public class FakeTransactionManager : ITransactionManager
 {
     private Scope? _lastScope;
 

@@ -1,6 +1,5 @@
 ﻿using Moq;
 
-using AcmeCarRental.Data;
 using AcmeCarRental.Data.Entities;
 
 using static AcmeCarRental.FixtureBuilders;
@@ -9,18 +8,20 @@ using Microsoft.Extensions.Logging;
 
 namespace AcmeCarRental;
 
-public class LoyaltyRedeemServiceTest
+public abstract class LoyaltyRedeemServiceTest
 {
-    private readonly FlakyDataService _dataService = new();
-    private readonly FakeLogger _fakeLogger = new();
-    private readonly LoyaltyRedeemService _service = null!;
-    private readonly FakeTransactionManager _transactions = new();
-    private readonly Mock<IExceptionHandler> _exceptionHandlerMock = new();
+    protected readonly FlakyDataService _dataService = new();
+    protected readonly FakeLogger _fakeLogger = new();
+    protected readonly ILoyaltyRedeemService _service = null!;
+    protected readonly FakeTransactionManager _transactions = new();
+    protected readonly Mock<IExceptionHandler> _exceptionHandlerMock = new();
 
     public LoyaltyRedeemServiceTest()
     {
-        _service = new LoyaltyRedeemService(_dataService, _fakeLogger, _transactions, _exceptionHandlerMock.Object);
+        _service = CreateService();
     }
+
+    protected abstract ILoyaltyRedeemService CreateService();
 
     [Theory]
     [InlineData(Size.FullSize, 30)]

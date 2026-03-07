@@ -8,7 +8,7 @@ namespace AcmeCarRental;
 /// a number of failing attempts before the operations succeed, which is useful for testing the retry logic 
 /// in the services. The data can be accessed using an indexer to get the current loyalty points for a given customer.
 /// </summary>
-internal class FlakyDataService : ILoyaltyDataService
+public class FlakyDataService : ILoyaltyDataService
 {
     private readonly Dictionary<Guid, int> _data = [];
 

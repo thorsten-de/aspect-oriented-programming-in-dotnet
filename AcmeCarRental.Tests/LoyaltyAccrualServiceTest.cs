@@ -8,18 +8,20 @@ using Moq;
 
 namespace AcmeCarRental;
 
-public class LoyaltyAccrualServiceTest
+public abstract class LoyaltyAccrualServiceTest
 {
-    private readonly FakeLogger _fakeLogger = new();
-    private readonly FlakyDataService _dataService = new();
-    private readonly LoyaltyAccrualService _service = null!;
-    private readonly FakeTransactionManager _transactions = new();
-    private readonly Mock<IExceptionHandler> _exceptionHandlerMock = new();
+    protected FakeLogger _fakeLogger = new();
+    protected readonly FlakyDataService _dataService = new();
+    protected readonly ILoyaltyAccrualService _service = null!;
+    protected readonly FakeTransactionManager _transactions = new();
+    protected readonly Mock<IExceptionHandler> _exceptionHandlerMock = new();
 
     public LoyaltyAccrualServiceTest()
     {
-        _service = new LoyaltyAccrualService(_dataService, _fakeLogger, _transactions, _exceptionHandlerMock.Object);
+        _service = CreateService();
     }
+
+    protected abstract ILoyaltyAccrualService CreateService();
 
     [Theory]
     [InlineData(Size.Compact, 3)]
