@@ -6,8 +6,7 @@ namespace AcmeCarRental.Decorators;
 
 internal class LoyaltyRedeemService(
     ILoyaltyDataService loyaltyDataService,
-    ILogger logger,
-    ITransactionFacade transactions
+    ILogger logger
     ) : ILoyaltyRedeemService
 {
     public void Redeem(Invoice invoice, int numberOfDays)
@@ -22,16 +21,13 @@ internal class LoyaltyRedeemService(
         logger.LogInformation("Invoice: {invoiceId}", invoice.Id);
         #endregion
 
-        transactions.Wrapper(() =>
-        {
-            int pointsPerDay = invoice.Vehicle.Size < Size.Luxury ? 10 : 15;
-            loyaltyDataService.SubstractPoints(invoice.Customer.Id, pointsPerDay * numberOfDays);
+        int pointsPerDay = invoice.Vehicle.Size < Size.Luxury ? 10 : 15;
+        loyaltyDataService.SubstractPoints(invoice.Customer.Id, pointsPerDay * numberOfDays);
 
-            invoice.Discount = numberOfDays * invoice.CostPerDay;
+        invoice.Discount = numberOfDays * invoice.CostPerDay;
 
-            #region Logging
-            logger.LogInformation("Redeem complete: {date}", DateTime.Now);
-            #endregion
-        });
+        #region Logging
+        logger.LogInformation("Redeem complete: {date}", DateTime.Now);
+        #endregion
     }
 }
