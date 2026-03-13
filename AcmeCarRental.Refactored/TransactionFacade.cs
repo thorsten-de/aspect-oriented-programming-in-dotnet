@@ -5,7 +5,7 @@ namespace AcmeCarRental.Refactored;
 /// </summary>
 /// <param name="transactions">Transaction manager to use for managing transactions and retries.</param>
 /// <param name="exceptionHandler">Exception handler to use for handling exceptions</param>
-public class TransactionFacade(ITransactionManager transactions, IExceptionHandler exceptionHandler) : ITransactionFacade
+public class TransactionFacade(ITransactionManagerWithWrapper transactions, IExceptionHandlerWithWrapper exceptionHandler) : ITransactionFacade
 {
     /// <summary>
     /// The Wrapper methods combines the ExceptionHandler and TransactionManager wrapper methods into a single method

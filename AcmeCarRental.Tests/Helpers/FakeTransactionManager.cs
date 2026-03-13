@@ -11,7 +11,7 @@ public enum TransactionState
 /// <summary>
 /// Fake implementation of transaction scope management
 /// </summary>
-public class FakeTransactionManager : ITransactionManager
+public class FakeTransactionManager : ITransactionManagerWithWrapper
 {
     private Scope? _lastScope;
 

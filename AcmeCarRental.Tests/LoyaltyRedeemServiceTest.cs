@@ -14,7 +14,7 @@ public abstract class LoyaltyRedeemServiceTest
     protected readonly FakeLogger _fakeLogger = new();
     protected readonly ILoyaltyRedeemService _service = null!;
     protected readonly FakeTransactionManager _transactions = new();
-    protected readonly Mock<IExceptionHandler> _exceptionHandlerMock = new() { CallBase = true };
+    protected readonly Mock<IExceptionHandlerWithWrapper> _exceptionHandlerMock = new() { CallBase = true };
 
     public LoyaltyRedeemServiceTest()
     {

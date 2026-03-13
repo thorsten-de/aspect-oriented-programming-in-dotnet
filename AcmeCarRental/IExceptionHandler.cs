@@ -16,21 +16,4 @@ public interface IExceptionHandler
     /// <returns>True if the exception was handled and should not be re-thrown, false if the exception should be re-thrown.</returns>
     bool Handle(Exception ex);
 
-    /// <summary>
-    /// A wrapper method that executes the given action and handles any exceptions that occur during its execution
-    /// using the Handle method. If an exception occurs and is not handled, it will be re-thrown.
-    /// </summary>
-    /// <param name="action">Action to execute and handle exceptions for.</param>
-    void Wrapper(Action action)
-    {
-        try
-        {
-            action();
-        }
-        catch (Exception ex)
-        {
-            if (!Handle(ex))
-                throw;
-        }
-    }
 }
