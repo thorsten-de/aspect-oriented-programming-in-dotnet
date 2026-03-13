@@ -7,12 +7,13 @@ public class LoyaltyRedeemServiceDecoratorsTest : LoyaltyRedeemServiceTest
     protected override ILoyaltyRedeemService CreateService()
     {
         return
-            new RedeemLoggingAspect(
-                new RedeemExceptionAspect(
-                    new RedeemTransactionAspect(
-                        new LoyaltyRedeemService(_dataService),
-                        _transactions),
-                    _exceptionHandlerMock.Object),
-                _fakeLogger);
+            new RedeemAssertPreconditions(
+                new RedeemLoggingAspect(
+                    new RedeemExceptionAspect(
+                        new RedeemTransactionAspect(
+                            new LoyaltyRedeemService(_dataService),
+                            _transactions),
+                        _exceptionHandlerMock.Object),
+                    _fakeLogger));
     }
 }

@@ -7,12 +7,13 @@ public class LoyaltyAccrualServiceDecoratorsTest : LoyaltyAccrualServiceTest
     protected override ILoyaltyAccrualService CreateService()
     {
         return
+        new AccureAssertPreconditions(
             new AccrueLoggingAspect(
                 new AccureExceptionAspect(
                     new AccrualTransactionAspect(
                         new LoyaltyAccrualService(_dataService),
                         _transactions),
                     _exceptionHandlerMock.Object),
-                _fakeLogger);
+                _fakeLogger));
     }
 }
