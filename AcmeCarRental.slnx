@@ -4,8 +4,12 @@
   </Folder>
   <Project Path="AcmeCarRental.Decorators.Tests/AcmeCarRental.Decorators.Tests.csproj" />
   <Project Path="AcmeCarRental.Decorators/AcmeCarRental.Decorators.csproj" />
-  <Project Path="AcmeCarRental.Metalama.Tests/AcmeCarRental.Metalama.Tests.csproj" />
-  <Project Path="AcmeCarRental.Metalama/AcmeCarRental.Metalama.csproj" />
+  <Project Path="AcmeCarRental.Metalama.Tests/AcmeCarRental.Metalama.Tests.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
+  <Project Path="AcmeCarRental.Metalama/AcmeCarRental.Metalama.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
   <Project Path="AcmeCarRental.NoAoP.Tests/AcmeCarRental.NoAoP.Tests.csproj" />
   <Project Path="AcmeCarRental.NoAOP/AcmeCarRental.NoAOP.csproj" />
   <Project Path="AcmeCarRental.Refactored.Tests/AcmeCarRental.Refactored.Tests.csproj" />

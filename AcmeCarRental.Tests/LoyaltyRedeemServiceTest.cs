@@ -11,7 +11,7 @@ namespace AcmeCarRental;
 public abstract class LoyaltyRedeemServiceTest
 {
     protected readonly FlakyDataService _dataService = new();
-    protected readonly FakeLogger _fakeLogger = new();
+    protected FakeLogger _fakeLogger = new();
     protected readonly ILoyaltyRedeemService _service = null!;
     protected readonly FakeTransactionManager _transactions = new();
     protected readonly Mock<IExceptionHandlerWithWrapper> _exceptionHandlerMock = new() { CallBase = true };

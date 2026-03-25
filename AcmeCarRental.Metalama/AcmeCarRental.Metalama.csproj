@@ -13,6 +13,12 @@
   <ItemGroup>
     <InternalsVisibleTo Include="AcmeCarRental.Metalama.Tests" />
   </ItemGroup>
+        
+  <ItemGroup>
+    <PackageReference Include="Metalama.Extensions.DependencyInjection" Version="2026.0.19" />
+    <PackageReference Include="Metalama.Extensions.DependencyInjection.ServiceLocator" Version="2026.0.19" />
+    <PackageReference Include="Metalama.Framework" Version="2026.0.19" />
+  </ItemGroup>
 
 
 </Project>

@@ -1,10 +1,12 @@
 ﻿using AcmeCarRental.Data;
 using AcmeCarRental.Data.Entities;
+using AcmeCarRental.Metalama.Aspects;
 
 namespace AcmeCarRental.Metalama;
 
 internal class LoyaltyRedeemService(ILoyaltyDataService loyaltyDataService) : ILoyaltyRedeemService
 {
+    [Logging]
     public void Redeem(Invoice invoice, int numberOfDays)
     {
         int pointsPerDay = invoice.Vehicle.Size < Size.Luxury ? 10 : 15;

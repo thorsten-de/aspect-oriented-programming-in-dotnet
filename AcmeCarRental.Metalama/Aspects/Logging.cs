@@ -1,43 +1,41 @@
 using AcmeCarRental.Data.Entities;
+using Metalama.Extensions.DependencyInjection;
+using Metalama.Framework.Aspects;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace AcmeCarRental.Metalama.Aspects;
 
-/// <summary>
-/// This aspect is responsible for logging the execution of the loyalty accrual and redeem services. It logs the start 
-/// and end of the execution, as well as the relevant data (customer, vehicle, invoice) for each operation.
-/// </summary>
-/// <param name="service">The service to decorate with logging.</param>
-/// <param name="logger">The logger to use for logging.</param>
-internal class AccrueLoggingAspect(ILoyaltyAccrualService service, ILogger logger) : ILoyaltyAccrualService
+public class LoggingAttribute : OverrideMethodAspect
 {
-    public void Accrue(RentalAgreement agreement)
+    /// <summary>
+    /// Gets the logger instance to be used for logging. This is a dependency injected by the framework somehow
+    /// </summary>
+    [IntroduceDependency]
+    private readonly ILogger _logger = null!;
+
+
+    public override dynamic? OverrideMethod()
     {
-        logger.LogInformation("Accrue: {date}", DateTime.Now);
-        logger.LogInformation("Customer: {customerId}", agreement?.Customer.Id);
-        logger.LogInformation("Vehicle: {vehicleId}", agreement?.Vehicle?.Id);
+        _logger.LogInformation("{methodName}: {date}", meta.Target.Method.Name, DateTime.Now);
 
-        service.Accrue(agreement);
+        if (meta.Target.Type.Name == "LoyaltyAccrualService")
+        {
+            RentalAgreement data = meta.RunTime<RentalAgreement>(meta.Target.Parameters[0].Value);
+            _logger.LogInformation("Customer: {customerId}", data.Customer?.Id );
+            _logger.LogInformation("Vehicle: {vehicleId}", data.Vehicle?.Id);
+        }
+        else if (meta.Target.Type.Name == "LoyaltyRedeemService")
+        {
+             Invoice data = meta.RunTime<Invoice>(meta.Target.Parameters[0].Value);
+            _logger.LogInformation("Invoice: {invoiceId}", data.Id) ;
+        }
+        
+       
+        var result = meta.Proceed();
 
-        logger.LogInformation("Accrue complete: {date}", DateTime.Now);
-    }
-}
-
-/// <summary>
-/// This aspect is responsible for logging the execution of the loyalty redeem service. It logs the start 
-/// and end of the execution, as well as the relevant data (invoice) for each operation.
-/// </summary>
-/// <param name="service">The service to decorate with logging.</param>
-/// <param name="logger">The logger to use for logging.</param>
-internal class RedeemLoggingAspect(ILoyaltyRedeemService service, ILogger logger) : ILoyaltyRedeemService
-{
-    public void Redeem(Invoice invoice, int numberOfDays)
-    {
-        logger.LogInformation("Redeem: {date}", DateTime.Now);
-        logger.LogInformation("Invoice: {invoiceId}", invoice?.Id);
-
-        service.Redeem(invoice, numberOfDays);
-
-        logger.LogInformation("Redeem complete: {date}", DateTime.Now);
+        _logger.LogInformation("{methodName} completed: {date}", meta.Target.Method.Name, DateTime.Now);
+        
+        return result;
     }
 }

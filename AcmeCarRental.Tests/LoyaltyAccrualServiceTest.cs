@@ -1,6 +1,5 @@
 ﻿using AcmeCarRental.Data.Entities;
 
-using Microsoft.Extensions.Logging.Testing;
 using Microsoft.Extensions.Logging;
 
 using static AcmeCarRental.FixtureBuilders;
@@ -8,13 +7,9 @@ using Moq;
 
 namespace AcmeCarRental;
 
-public abstract class LoyaltyAccrualServiceTest
+public abstract class LoyaltyAccrualServiceTest : BaseServiceTest
 {
-    protected FakeLogger _fakeLogger = new();
-    protected readonly FlakyDataService _dataService = new();
     protected readonly ILoyaltyAccrualService _service = null!;
-    protected readonly FakeTransactionManager _transactions = new();
-    protected readonly Mock<IExceptionHandlerWithWrapper> _exceptionHandlerMock = new() { CallBase = true };
 
     public LoyaltyAccrualServiceTest()
     {
