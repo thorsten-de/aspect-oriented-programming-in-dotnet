@@ -1,14 +1,14 @@
 ﻿using AcmeCarRental.Data;
 using AcmeCarRental.Data.Entities;
 using AcmeCarRental.Metalama.Aspects;
+using Metalama.Patterns.Contracts;
 
 namespace AcmeCarRental.Metalama;
 
 internal class LoyaltyAccrualService(ILoyaltyDataService loyaltyDataService) : ILoyaltyAccrualService
 {
     [Logging]
-    [AssertPreconditions]
-    public void Accrue(RentalAgreement agreement)
+    public void Accrue([Required] RentalAgreement agreement)
     {
         var rentalTimeSpan = agreement.EndDate - agreement.StartDate;
         int numberOfDays = (int)Math.Floor(rentalTimeSpan.TotalDays);
