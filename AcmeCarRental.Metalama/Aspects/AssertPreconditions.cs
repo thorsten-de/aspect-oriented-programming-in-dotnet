@@ -1,38 +1,22 @@
-using AcmeCarRental.Data.Entities;
+using Metalama.Framework.Aspects;
+using Metalama.Framework.Code;
+using System.Diagnostics;
 
 namespace AcmeCarRental.Metalama.Aspects;
 
-/// <summary>
-/// This aspect is responsible for asserting preconditions for the ILoyaltyAccrualService and ILoyaltyRedeemService. 
-/// It implements the respective service interfaces and decorates an instance of the service. The aspect uses
-/// defensive programming techniques to check for null arguments and invalid values before delegating the call 
-/// to the decorated service. This allows for precondition checks without cluttering the business logic itself.
-/// </summary>
-/// <param name="service">The accrual service to decorate.</param>
-internal class AccureAssertPreconditions(ILoyaltyAccrualService service) : ILoyaltyAccrualService
+
+public class AssertPreconditionsAttribute : OverrideMethodAspect
 {
-    public void Accrue(RentalAgreement agreement)
+    public override dynamic? OverrideMethod()
     {
-        ArgumentNullException.ThrowIfNull(agreement);
+        foreach (var p in meta.Target.Parameters)
+        {
+            ArgumentNullException.ThrowIfNull(p.Value, p.Name);
+            if (p.Type.IsConvertibleTo(typeof(int)))
+                ArgumentOutOfRangeException.ThrowIfNegativeOrZero((int)p.Value!, p.Name);
 
-        service.Accrue(agreement);
-    }
-}
+        }
 
-/// <summary>
-/// This aspect is responsible for asserting preconditions for the ILoyaltyRedeemService. It implements the
-/// ILoyaltyRedeemService interface and decorates an instance of the service. The aspect uses defensive programming 
-/// techniques to check for null arguments and invalid values before delegating the call to the decorated service.
-/// This allows for precondition checks without cluttering the business logic itself.
-/// </summary>
-/// <param name="service">The redeem service to decorate.</param>
-internal class RedeemAssertPreconditions(ILoyaltyRedeemService service) : ILoyaltyRedeemService
-{
-    public void Redeem(Invoice invoice, int numberOfDays)
-    {
-        ArgumentNullException.ThrowIfNull(invoice);
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(numberOfDays);
-
-        service.Redeem(invoice, numberOfDays);
+        return meta.Proceed();
     }
 }

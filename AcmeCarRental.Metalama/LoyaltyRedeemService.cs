@@ -7,6 +7,7 @@ namespace AcmeCarRental.Metalama;
 internal class LoyaltyRedeemService(ILoyaltyDataService loyaltyDataService) : ILoyaltyRedeemService
 {
     [Logging]
+    [AssertPreconditions]
     public void Redeem(Invoice invoice, int numberOfDays)
     {
         int pointsPerDay = invoice.Vehicle.Size < Size.Luxury ? 10 : 15;

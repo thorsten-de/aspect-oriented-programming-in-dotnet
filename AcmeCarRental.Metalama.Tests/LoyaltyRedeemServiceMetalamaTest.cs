@@ -13,12 +13,11 @@ public class LoyaltyRedeemServiceMetalamaTest : LoyaltyRedeemServiceTest
         SetupServiceLocator();
 
         return
-            new RedeemAssertPreconditions(
                     new RedeemExceptionAspect(
                         new RedeemTransactionAspect(
                             new LoyaltyRedeemService(_dataService),
                             _transactions),
-                        _exceptionHandlerMock.Object));
+                        _exceptionHandlerMock.Object);
     }
 
     private void SetupServiceLocator()

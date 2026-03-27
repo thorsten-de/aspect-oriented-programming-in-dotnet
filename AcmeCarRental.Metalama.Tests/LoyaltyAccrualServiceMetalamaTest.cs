@@ -12,12 +12,11 @@ public class LoyaltyAccrualServiceMetalamaTest : LoyaltyAccrualServiceTest
         SetupServiceLocator();
 
         return
-        new AccureAssertPreconditions(
                 new AccureExceptionAspect(
                     new AccrualTransactionAspect(
                         new LoyaltyAccrualService(_dataService),
                         _transactions),
-                    _exceptionHandlerMock.Object));
+                    _exceptionHandlerMock.Object);
     }
 
     private void SetupServiceLocator()
