@@ -14,17 +14,16 @@ public class LoyaltyRedeemServiceMetalamaTest : LoyaltyRedeemServiceTest
 
         return
                     new RedeemExceptionAspect(
-                        new RedeemTransactionAspect(
                             new LoyaltyRedeemService(_dataService),
-                            _transactions),
                         _exceptionHandlerMock.Object);
     }
 
     private void SetupServiceLocator()
     {
-        var serviceCollection = new ServiceCollection()
-        .AddSingleton<ILogger>(_fakeLogger);
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var serviceProvider = new ServiceCollection()
+            .AddSingleton<ILogger>(_fakeLogger)
+            .AddSingleton<ITransactionManager>(_transactions)
+            .BuildServiceProvider();
 
         ServiceProviderProvider.ServiceProvider = () => serviceProvider;
     }

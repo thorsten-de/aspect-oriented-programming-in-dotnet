@@ -13,17 +13,16 @@ public class LoyaltyAccrualServiceMetalamaTest : LoyaltyAccrualServiceTest
 
         return
                 new AccureExceptionAspect(
-                    new AccrualTransactionAspect(
                         new LoyaltyAccrualService(_dataService),
-                        _transactions),
                     _exceptionHandlerMock.Object);
     }
 
     private void SetupServiceLocator()
     {
-        var serviceCollection = new ServiceCollection()
-        .AddSingleton<ILogger>(_fakeLogger);
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var serviceProvider = new ServiceCollection()
+            .AddSingleton<ILogger>(_fakeLogger)
+            .AddSingleton<ITransactionManager>(_transactions)
+            .BuildServiceProvider();
 
         ServiceProviderProvider.ServiceProvider = () => serviceProvider;
     }

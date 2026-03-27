@@ -8,6 +8,7 @@ namespace AcmeCarRental.Metalama;
 internal class LoyaltyAccrualService(ILoyaltyDataService loyaltyDataService) : ILoyaltyAccrualService
 {
     [Logging]
+    [TransactionManagement]
     public void Accrue([Required] RentalAgreement agreement)
     {
         var rentalTimeSpan = agreement.EndDate - agreement.StartDate;
