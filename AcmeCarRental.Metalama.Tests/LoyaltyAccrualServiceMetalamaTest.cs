@@ -11,10 +11,7 @@ public class LoyaltyAccrualServiceMetalamaTest : LoyaltyAccrualServiceTest
     {
         SetupServiceLocator();
 
-        return
-                new AccureExceptionAspect(
-                        new LoyaltyAccrualService(_dataService),
-                    _exceptionHandlerMock.Object);
+        return new LoyaltyAccrualService(_dataService);
     }
 
     private void SetupServiceLocator()
@@ -22,6 +19,7 @@ public class LoyaltyAccrualServiceMetalamaTest : LoyaltyAccrualServiceTest
         var serviceProvider = new ServiceCollection()
             .AddSingleton<ILogger>(_fakeLogger)
             .AddSingleton<ITransactionManager>(_transactions)
+            .AddSingleton<IExceptionHandler>(_exceptionHandlerMock.Object)
             .BuildServiceProvider();
 
         ServiceProviderProvider.ServiceProvider = () => serviceProvider;

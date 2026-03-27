@@ -9,6 +9,7 @@ internal class LoyaltyAccrualService(ILoyaltyDataService loyaltyDataService) : I
 {
     [Logging]
     [TransactionManagement]
+    [ExceptionHandling]
     public void Accrue([Required] RentalAgreement agreement)
     {
         var rentalTimeSpan = agreement.EndDate - agreement.StartDate;

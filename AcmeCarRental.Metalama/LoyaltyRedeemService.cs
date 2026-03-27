@@ -10,6 +10,7 @@ internal class LoyaltyRedeemService(ILoyaltyDataService loyaltyDataService) : IL
 {
     [Logging]
     [TransactionManagement]
+    [ExceptionHandling]
     public void Redeem([Required] Invoice invoice, [StrictlyPositive] int numberOfDays)
     {
         int pointsPerDay = invoice.Vehicle.Size < Size.Luxury ? 10 : 15;

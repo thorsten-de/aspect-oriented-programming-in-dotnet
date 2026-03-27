@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AcmeCarRental.Metalama.Tests/AcmeCarRental.Metalama.Tests.csproj" />
+  <Project Path="AcmeCarRental.Metalama/AcmeCarRental.Metalama.csproj" />
+  <Project Path="AcmeCarRental.Tests/AcmeCarRental.Tests.csproj" />
+  <Project Path="AcmeCarRental/AcmeCarRental.csproj" />
+</Solution>

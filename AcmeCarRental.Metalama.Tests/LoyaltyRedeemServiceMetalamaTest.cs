@@ -12,10 +12,7 @@ public class LoyaltyRedeemServiceMetalamaTest : LoyaltyRedeemServiceTest
     {
         SetupServiceLocator();
 
-        return
-                    new RedeemExceptionAspect(
-                            new LoyaltyRedeemService(_dataService),
-                        _exceptionHandlerMock.Object);
+        return new LoyaltyRedeemService(_dataService);
     }
 
     private void SetupServiceLocator()
@@ -23,6 +20,7 @@ public class LoyaltyRedeemServiceMetalamaTest : LoyaltyRedeemServiceTest
         var serviceProvider = new ServiceCollection()
             .AddSingleton<ILogger>(_fakeLogger)
             .AddSingleton<ITransactionManager>(_transactions)
+            .AddSingleton<IExceptionHandler>(_exceptionHandlerMock.Object)
             .BuildServiceProvider();
 
         ServiceProviderProvider.ServiceProvider = () => serviceProvider;
