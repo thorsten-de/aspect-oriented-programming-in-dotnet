@@ -1,19 +1,9 @@
 ﻿using CombiningAspects.Services;
-using Lamar;
-
-var container = new Container(x =>
-{
-    x.Scan(s =>
-    {
-        s.TheCallingAssembly();
-        s.WithDefaultConventions();
-    });
-});
 
 try
 {
     string accountNumber = "0815";
-    var budgetService = container.GetInstance<IBudgetService>();
+    var budgetService = ObjectFactory.GetInstance<IBudgetService>();
 
     decimal budget = budgetService.GetBudgetForAccount(accountNumber);
     Console.WriteLine($"Account {accountNumber} has budget {budget:C}");
@@ -26,6 +16,4 @@ catch (Exception ex)
 {
     Console.WriteLine($"Unable to retrieve budget. Error: {ex.Message}");
 }
-
-
 
