@@ -1,2 +1,13 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿
+
+using Lamar;
+
+var container = new Container(x =>
+{
+    x.Scan(s =>
+    {
+        s.TheCallingAssembly();
+        s.WithDefaultConventions();
+    });
+});
+
