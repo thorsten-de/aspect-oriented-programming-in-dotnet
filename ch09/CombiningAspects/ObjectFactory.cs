@@ -1,3 +1,5 @@
+using CombiningAspects.Concerns.DynamicProxy;
+using CombiningAspects.Services;
 using Lamar;
 
 /// <summary>
@@ -16,9 +18,21 @@ public static class ObjectFactory
                 s.TheCallingAssembly();
                 s.WithDefaultConventions();
             });
+
+            x.ForConcreteType<AuthorizedInterceptor>()
+                .Configure.Ctor<string>("role").Is("Manager")
+                .Named("ManagerAuth");
+
+            var proxyHelper = new ProxyHelper();
+            x.For<IBudgetService>()
+                .InterceptAll(proxyHelper.Proxify<IBudgetService, CachedInterceptor>);
+            x.For<IBudgetService>()
+                .InterceptAll(w => proxyHelper.Proxify<IBudgetService, AuthorizedInterceptor>("ManagerAuth", w));
         });
     }
 
     public static T GetInstance<T>() => _container.GetInstance<T>();
+
+    public static T GetNamedInstance<T>(string name) => _container.GetInstance<T>(name);
 }
 
