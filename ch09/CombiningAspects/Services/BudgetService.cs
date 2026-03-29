@@ -9,8 +9,8 @@ public interface IBudgetService
 
 public class BudgetService : IBudgetService
 {
-    [Cached(AspectPriority = 20)]
-    [Authorized("Manager", AspectPriority = 10)]
+    [Cached]
+    [Authorized("Manager")]
     public decimal GetBudgetForAccount(string accountNumber) =>
         Random.Shared.Next(1000, 5000);
 }

@@ -1,11 +1,12 @@
 using System.Reflection;
-using ImTools;
 using PostSharp.Aspects;
+using PostSharp.Aspects.Dependencies;
 using PostSharp.Serialization;
 
 namespace CombiningAspects.Concerns.PostSharp;
 
 [PSerializable]
+[ProvideAspectRole(StandardRoles.Caching)]
 public class CachedAttribute : OnMethodBoundaryAspect
 {
     [PNonSerialized]
