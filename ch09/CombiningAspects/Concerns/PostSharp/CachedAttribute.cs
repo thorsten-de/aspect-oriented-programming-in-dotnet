@@ -5,6 +5,13 @@ using PostSharp.Serialization;
 
 namespace CombiningAspects.Concerns.PostSharp;
 
+/// <summary>
+/// Applies caching behavior to the decorated method.
+/// </summary>
+/// <remarks>
+/// We mark this aspect with the Caching role, so that other attributes can
+/// specify their dependency on it.
+/// </remarks>
 [PSerializable]
 [ProvideAspectRole(StandardRoles.Caching)]
 public class CachedAttribute : OnMethodBoundaryAspect

@@ -2,10 +2,11 @@ using PostSharp.Aspects;
 
 namespace CombiningAspects.Concerns.PostSharp;
 
-
-
 public static class PostSharpMethodContextExtensions
 {
+    /// <summary>
+    /// Adapts PostSharp's MethodExecutionArgs to our IMethodContextAdapter interface.
+    /// </summary>
     private class PostSharpMethodContextAdapter(MethodExecutionArgs args) : IMethodContextAdapter
     {
         public object Tag
@@ -30,6 +31,9 @@ public static class PostSharpMethodContextExtensions
         }
     }
 
+    /// <summary>
+    /// Converts PostSharp's MethodExecutionArgs to our IMethodContextAdapter
+    /// </summary>
     public static IMethodContextAdapter ToMethodContext(this MethodExecutionArgs args) =>
         new PostSharpMethodContextAdapter(args);
 }

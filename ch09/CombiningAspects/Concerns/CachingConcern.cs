@@ -4,12 +4,20 @@ using CombiningAspects.Services;
 namespace CombiningAspects.Concerns;
 
 
+/// <summary>
+/// Defines the contract for caching behavior. This concern will be used by our CachedAttribute to implement caching logic.
+/// </summary>
 public interface ICachingConcern
 {
     void OnEntry(IMethodContextAdapter methodContext);
     void OnSuccess(IMethodContextAdapter methodContext);
 }
 
+/// <summary>
+/// Implements caching behavior for methods decorated with the CachedAttribute. 
+/// It checks the cache on method entry and stores results on success.
+/// </summary>
+/// <param name="cache">The cache service used to store and retrieve cached values.</param>
 public class CachingConcern(ICacheService cache) : ICachingConcern
 {
     public void OnEntry(IMethodContextAdapter methodContext)

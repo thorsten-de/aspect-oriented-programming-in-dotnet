@@ -2,11 +2,20 @@ using CombiningAspects.Services;
 
 namespace CombiningAspects.Concerns;
 
+/// <summary>
+/// Defines the contract for authorization behavior. This concern will be used 
+/// by our AuthorizedAttribute to implement authorization logic.
+/// </summary>
 public interface IAuthorizationConcern
 {
     void OnEntry(IMethodContextAdapter methodContext, string role);
 }
 
+/// <summary>
+/// Implements authorization behavior for methods decorated with the AuthorizedAttribute. 
+/// It checks the user's roles on method entry and throws an exception if unauthorized.
+/// </summary>
+/// <param name="users">The user repository used to retrieve the current user's roles.</param>
 public class AuthorizationConcern(IUserRepository users) : IAuthorizationConcern
 {
     public void OnEntry(IMethodContextAdapter methodContext, string role)
