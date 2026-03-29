@@ -1,5 +1,3 @@
-using CombiningAspects.Concerns.PostSharp;
-
 namespace CombiningAspects.Services;
 
 /// <summary>
@@ -22,8 +20,6 @@ public interface IBudgetService
 /// </summary>
 public class BudgetService : IBudgetService
 {
-    [Cached]
-    [Authorized("Manager")]
     public decimal GetBudgetForAccount(string accountNumber) =>
         Random.Shared.Next(1000, 5000);
 }
