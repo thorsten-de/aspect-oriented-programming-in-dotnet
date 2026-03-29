@@ -10,6 +10,7 @@ public interface IBudgetService
 public class BudgetService : IBudgetService
 {
     [Cached]
+    [Authorized("Manager")]
     public decimal GetBudgetForAccount(string accountNumber) =>
         Random.Shared.Next(1000, 5000);
 }
