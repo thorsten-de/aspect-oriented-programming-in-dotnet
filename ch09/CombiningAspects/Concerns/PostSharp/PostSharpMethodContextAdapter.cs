@@ -9,13 +9,15 @@ public static class PostSharpMethodContextExtensions
     /// </summary>
     private class PostSharpMethodContextAdapter(MethodExecutionArgs args) : IMethodContextAdapter
     {
+        public bool Proceed => args.FlowBehavior == FlowBehavior.Continue;
+
         public object Tag
         {
             get => args.MethodExecutionTag;
             set => args.MethodExecutionTag = value;
         }
 
-        public object ReturnValue
+        public object? ReturnValue
         {
             get => args.ReturnValue;
             set => args.ReturnValue = value;
@@ -23,12 +25,13 @@ public static class PostSharpMethodContextExtensions
 
         public string MethodName => args.Method.Name;
 
-        public object[] Arguments => args.Arguments.ToArray();
+        public object?[] Arguments => args.Arguments.ToArray();
 
         public void AbortMethod()
         {
             args.FlowBehavior = FlowBehavior.Return;
         }
+
     }
 
     /// <summary>

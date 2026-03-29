@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Castle.Core" Version="5.2.1" />
         <PackageReference Include="Lamar" Version="15.0.1" />
         <PackageReference Include="PostSharp" Version="2026.0.7" />
     </ItemGroup>
