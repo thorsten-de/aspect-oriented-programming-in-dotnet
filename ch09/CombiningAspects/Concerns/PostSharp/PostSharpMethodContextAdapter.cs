@@ -1,0 +1,35 @@
+using PostSharp.Aspects;
+
+namespace CombiningAspects.Concerns.PostSharp;
+
+
+
+public static class PostSharpMethodContextExtensions
+{
+    private class PostSharpMethodContextAdapter(MethodExecutionArgs args) : IMethodContextAdapter
+    {
+        public object Tag
+        {
+            get => args.MethodExecutionTag;
+            set => args.MethodExecutionTag = value;
+        }
+
+        public object ReturnValue
+        {
+            get => args.ReturnValue;
+            set => args.ReturnValue = value;
+        }
+
+        public string MethodName => args.Method.Name;
+
+        public object[] Arguments => args.Arguments.ToArray();
+
+        public void AbortMethod()
+        {
+            args.FlowBehavior = FlowBehavior.Return;
+        }
+    }
+
+    public static IMethodContextAdapter ToMethodContext(this MethodExecutionArgs args) =>
+        new PostSharpMethodContextAdapter(args);
+}
